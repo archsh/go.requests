@@ -1,8 +1,15 @@
 package requests
 
 import (
+	"bytes"
+	"encoding/json"
+	"encoding/xml"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 func NewRequest(method, url string, body io.Reader) (*Request, error) {
@@ -37,5 +44,33 @@ func Post(url string, contentType string, body io.Reader) (*Response, error) {
 	} else {
 		q._req.Header.Add("Content-Type", contentType)
 		return Do(q)
+	}
+}
+
+func PostForm(url string, data url.Values) (resp *Response, err error) {
+	return Post(url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
+}
+
+func PostJSON(url string, o interface{}) (resp *Response, err error) {
+	if bs, e := json.Marshal(o); nil != e {
+		return nil, e
+	} else {
+		return Post(url, "application/json", bytes.NewReader(bs))
+	}
+}
+
+func PostYAML(url string, o interface{}) (resp *Response, err error) {
+	if bs, e := yaml.Marshal(o); nil != e {
+		return nil, e
+	} else {
+		return Post(url, "application/yaml", bytes.NewReader(bs))
+	}
+}
+
+func PostXML(url string, o interface{}) (resp *Response, err error) {
+	if bs, e := xml.Marshal(o); nil != e {
+		return nil, e
+	} else {
+		return Post(url, "application/xml", bytes.NewReader(bs))
 	}
 }

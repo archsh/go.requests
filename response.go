@@ -13,11 +13,11 @@ type Response struct {
 	_resp *http.Response
 }
 
-func (resp Response) Bytes() ([]byte, error) {
+func (resp *Response) Bytes() ([]byte, error) {
 	return ioutil.ReadAll(resp._resp.Body)
 }
 
-func (resp Response) JSON(o interface{}) error {
+func (resp *Response) JSON(o interface{}) error {
 	if bs, e := resp.Bytes(); nil != e {
 		return e
 	} else if e := json.Unmarshal(bs, o); nil != e {
@@ -26,7 +26,7 @@ func (resp Response) JSON(o interface{}) error {
 	return nil
 }
 
-func (resp Response) YAML(o interface{}) error {
+func (resp *Response) YAML(o interface{}) error {
 	if bs, e := resp.Bytes(); nil != e {
 		return e
 	} else if e := yaml.Unmarshal(bs, o); nil != e {
@@ -35,7 +35,7 @@ func (resp Response) YAML(o interface{}) error {
 	return nil
 }
 
-func (resp Response) XML(o interface{}) error {
+func (resp *Response) XML(o interface{}) error {
 	if bs, e := resp.Bytes(); nil != e {
 		return e
 	} else if e := xml.Unmarshal(bs, o); nil != e {
